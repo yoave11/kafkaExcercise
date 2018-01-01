@@ -38,12 +38,8 @@ public class Main {
         CompletionStage<Done> result = Consumer.committableSource(
                 consumerSettings,
                 Subscriptions.topics("yoav")
-        ).mapAsync(1, record -> {
-            System.out.println(record.record().value());
-            return CompletableFuture.completedFuture(Done.getInstance());
-        })
-                .runWith(Sink.ignore(), materializer);
 
+        ).runWith(Sink.foreach(r -> System.out.println(r.record().value()) ), materializer);
         result.exceptionally(e -> {
             system.log().error(e, e.getMessage());
             return Done.getInstance();
